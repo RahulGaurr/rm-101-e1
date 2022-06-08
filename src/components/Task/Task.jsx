@@ -1,15 +1,64 @@
-import React from "react";
+import Counter from "../Counter/Counter";
 import styles from "./task.module.css";
+import { useContext } from "react";
+import { TodoContext } from "../../context/todoContext";
+
 
 const Task = () => {
-  // NOTE: do not delete `data-testid` key value pair
+  const { todo, handleChange } = useContext(TodoContext);
+
+  function handleClick(id) {
+    handleChange(
+      todo.map((task) =>
+        task.id === id ? { ...task, done: !task.done } : task
+      )
+    );
+  }
+
+  function handleDel(id) {
+    handleChange(todo.filter((task) => task.id !== id));
+  }
+
   return (
-    <li data-testid="task" className={styles.task}>
-      <input type="checkbox" data-testid="task-checkbox" />
-      <div data-testid="task-text"></div>
-      {/* Counter here */}
-      <button data-testid="task-remove-button"></button>
-    </li>
+    <>
+      {todo.map((task) => (
+        <li data-testid="task" className={styles.task} key={task.id}>
+          {task.done ? (
+            <input
+              type="checkbox"
+              data-testid="task-checkbox"
+              onClick={() => {
+                handleClick(task.id);
+              }}
+              defaultChecked
+            />
+          ) : (
+            <input
+              type="checkbox"
+              data-testid="task-checkbox"
+              onClick={() => {
+                handleClick(task.id);
+              }}
+            />
+          )}
+          <div
+            data-testid="task-text"
+            style={task.done ? { textDecoration: "line-through",color: "green"} : {}}
+          >
+            {task.text}
+          </div>
+          <Counter countvalue={task.count} />
+          <button
+            data-testid="task-remove-button"
+            onClick={() => {
+              handleDel(task.id);
+            }}
+          >
+            x
+          </button>
+        </li>
+      ))}
+    </>
   );
 };
 
